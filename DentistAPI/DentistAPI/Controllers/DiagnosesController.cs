@@ -12,47 +12,47 @@ namespace DentistAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ToothRecordsController : ControllerBase
+    public class DiagnosesController : ControllerBase
     {
         private readonly DentistAPIContext _context;
 
-        public ToothRecordsController(DentistAPIContext context)
+        public DiagnosesController(DentistAPIContext context)
         {
             _context = context;
         }
 
-        // GET: api/ToothRecords
+        // GET: api/Diagnoses
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ToothRecord>>> GetToothRecord()
+        public async Task<ActionResult<IEnumerable<Diagnosis>>> GetDiagnoses()
         {
-            return await _context.ToothRecords.ToListAsync();
+            return await _context.Diagnoses.ToListAsync();
         }
 
-        // GET: api/ToothRecords/5
+        // GET: api/Diagnoses/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ToothRecord>> GetToothRecord(int id)
+        public async Task<ActionResult<Diagnosis>> GetDiagnosis(int id)
         {
-            var toothRecord = await _context.ToothRecords.FindAsync(id);
+            var diagnosis = await _context.Diagnoses.FindAsync(id);
 
-            if (toothRecord == null)
+            if (diagnosis == null)
             {
                 return NotFound();
             }
 
-            return toothRecord;
+            return diagnosis;
         }
 
-        // PUT: api/ToothRecords/5
+        // PUT: api/Diagnoses/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutToothRecord(int id, ToothRecord toothRecord)
+        public async Task<IActionResult> PutDiagnosis(int id, Diagnosis diagnosis)
         {
-            if (id != toothRecord.Id)
+            if (id != diagnosis.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(toothRecord).State = EntityState.Modified;
+            _context.Entry(diagnosis).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +60,7 @@ namespace DentistAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ToothRecordExists(id))
+                if (!DiagnosisExists(id))
                 {
                     return NotFound();
                 }
@@ -73,36 +73,36 @@ namespace DentistAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/ToothRecords
+        // POST: api/Diagnoses
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ToothRecord>> PostToothRecord(ToothRecord toothRecord)
+        public async Task<ActionResult<Diagnosis>> PostDiagnosis(Diagnosis diagnosis)
         {
-            _context.ToothRecords.Add(toothRecord);
+            _context.Diagnoses.Add(diagnosis);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetToothRecord", new { id = toothRecord.Id }, toothRecord);
+            return CreatedAtAction("GetDiagnosis", new { id = diagnosis.Id }, diagnosis);
         }
 
-        // DELETE: api/ToothRecords/5
+        // DELETE: api/Diagnoses/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteToothRecord(int id)
+        public async Task<IActionResult> DeleteDiagnosis(int id)
         {
-            var toothRecord = await _context.ToothRecords.FindAsync(id);
-            if (toothRecord == null)
+            var diagnosis = await _context.Diagnoses.FindAsync(id);
+            if (diagnosis == null)
             {
                 return NotFound();
             }
 
-            _context.ToothRecords.Remove(toothRecord);
+            _context.Diagnoses.Remove(diagnosis);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool ToothRecordExists(int id)
+        private bool DiagnosisExists(int id)
         {
-            return _context.ToothRecords.Any(e => e.Id == id);
+            return _context.Diagnoses.Any(e => e.Id == id);
         }
     }
 }

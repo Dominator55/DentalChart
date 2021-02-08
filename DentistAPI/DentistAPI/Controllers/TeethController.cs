@@ -22,14 +22,14 @@ namespace DentistAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Tooth>>> GetTooth()
         {
-            return await _context.Tooth.Include(x => x.ToothToothSurface).ThenInclude(x => x.Surface).ToListAsync();
+            return await _context.Teeth.Include(x => x.ToothToothSurface).ThenInclude(x => x.Surface).ToListAsync();
         }
 
         // GET: api/Teeth/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Tooth>> GetTooth(int id)
         {
-            var tooth = await _context.Tooth.Include(x => x.ToothToothSurface).ThenInclude(x => x.Surface).FirstOrDefaultAsync(t => t.Id == id);
+            var tooth = await _context.Teeth.Include(x => x.ToothToothSurface).ThenInclude(x => x.Surface).FirstOrDefaultAsync(t => t.Id == id);
 
             if (tooth == null)
             {
@@ -75,7 +75,7 @@ namespace DentistAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Tooth>> PostTooth(Tooth tooth)
         {
-            _context.Tooth.Add(tooth);
+            _context.Teeth.Add(tooth);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetTooth", new { id = tooth.Id }, tooth);
@@ -85,13 +85,13 @@ namespace DentistAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTooth(int id)
         {
-            var tooth = await _context.Tooth.FindAsync(id);
+            var tooth = await _context.Teeth.FindAsync(id);
             if (tooth == null)
             {
                 return NotFound();
             }
 
-            _context.Tooth.Remove(tooth);
+            _context.Teeth.Remove(tooth);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -99,7 +99,7 @@ namespace DentistAPI.Controllers
 
         private bool ToothExists(int id)
         {
-            return _context.Tooth.Any(e => e.Id == id);
+            return _context.Teeth.Any(e => e.Id == id);
         }
     }
 }

@@ -10,10 +10,12 @@ export default class PatientService {
     }
 
     static async UpdatePatient(patient){
-        //TODO: UpdatePatient API call
+        axios.put("https://localhost:44351/api/Patients/"+patient.id, patient)
+        //TODO: not tested
     }
 
     static async CreatePatient(patient){
-        //TODO: CreatePatient API call
+        axios.post("https://localhost:44351/api/Patients/", patient)
+        //TODO: not tested
     }
 }

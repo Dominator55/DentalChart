@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using DentistAPI.Enums;
 using DentistAPI.Models;
 using Microsoft.EntityFrameworkCore;
-using DentistAPI.Enums;
+using System;
+using System.Collections.Generic;
 
 namespace DentistAPI.Seeds
 {
@@ -18,7 +19,14 @@ namespace DentistAPI.Seeds
                 Phone = "655 475 877",
                 Email = "jana.novakova@gmail.com",
                 Age = 28,
-                healthInsuranceCompany = HealthInsuranceCompanies.VZP
+                healthInsuranceCompany = HealthInsuranceCompanies.VZP,
+                Encounters = new List<Encounter>()
+                {
+                    new Encounter(){
+                        Date = new DateTime(),
+                        ReportText = "Test zpráva",
+                        }
+                }
             }
         };
         public static void Seed(ModelBuilder modelBuilder)

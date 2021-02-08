@@ -9,7 +9,7 @@
 <script>
 // @ is an alias to /src'
 
-import PatientService from '@/services/PatientService'
+import PatientService from '@/services/PatientsService'
 
 export default {
   name: 'Home',

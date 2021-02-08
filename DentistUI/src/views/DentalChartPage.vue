@@ -32,7 +32,7 @@
 import DentalChart from '../components/DentalChartVues/DentalChart.vue'
 import EncounterPicker from '../components/DentalChartVues/EncounterPicker.vue'
 import ToolPicker from '../components/DentalChartVues/ToolPicker.vue'
-import PatientService from '@/services/PatientService'
+import PatientService from '@/services/PatientsService'
 import ToothRecordsService from '@/services/ToothRecordsService'
 import TodaysRecords from '../components/DentalChartVues/TodaysRecords.vue'
 

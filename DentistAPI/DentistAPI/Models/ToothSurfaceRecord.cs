@@ -1,4 +1,5 @@
 using DentistAPI.Enums;
+using System.Collections.Generic;
 
 namespace DentistAPI.Models
 {
@@ -7,5 +8,6 @@ namespace DentistAPI.Models
         public ToothRecord ToothRecord { get; set; }
         public ToothSurface ToothSurface { get; set; }
         public State State { get; set; }
+        public List<ToothSurfaceRecordDiagnosis> Diagnoses { get; set; }
     }
 }
