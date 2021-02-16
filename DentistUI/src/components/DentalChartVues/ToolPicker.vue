@@ -10,23 +10,40 @@
 </template>
 
 <script>
+
 export default {
     name: 'EncounterPicker',
     methods: {
         onClickEncounter: function() {
-            this.$parent.$data.toolSelected = {
-                onClickFunction: function(click, ) {
+            // this.$parent.$data.toolSelected = {
+            //     onClickFunction: function(click, ) {
+            //         var parent = click.target.parentElement
+            //         parent.children.forEach(child => {
+            //             if (child.style.fill != "rgb(19, 18, 18)") {
+            //                 child.style.fill = "grey"
+            //             }
+            //         });
+            //         parent.setAttribute("class", "changed")
+            //         console.log(parent)
+            //     }
+            // }
+            // this.selectedTool = "encounter"
+            this.$parent.toolSelected = {
+                onClickFunction: function(click, ){
                     var parent = click.target.parentElement
+                    var localization = parent.id.split('t')[1]
+                    var tooth = this.$parent.patient.to
+                    this.$parent.diagnosis.push({
+                    
+
+                    })
                     parent.children.forEach(child => {
                         if (child.style.fill != "rgb(19, 18, 18)") {
                             child.style.fill = "grey"
                         }
                     });
-                    parent.setAttribute("class", "changed")
-                    console.log(parent)
                 }
             }
-            this.selectedTool = "encounter"
         },
         getClass: function(name) {
             if (name == this.selectedTool)

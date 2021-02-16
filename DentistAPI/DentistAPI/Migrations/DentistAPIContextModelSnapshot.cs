@@ -129,6 +129,9 @@ namespace DentistAPI.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("text");
 
+                    b.Property<int>("HealthInsuranceCompany")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -150,9 +153,6 @@ namespace DentistAPI.Migrations
                     b.Property<string>("SmokingDetail")
                         .HasColumnType("text");
 
-                    b.Property<int>("healthInsuranceCompany")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.ToTable("Patients");
@@ -161,17 +161,22 @@ namespace DentistAPI.Migrations
                         new
                         {
                             Id = 1,
-                            Address = "Jabloňová 16 Brno 62100",
-                            Age = 28,
-                            Alcohol = false,
+                            Address = "Kartouzská 8 Brno",
+                            Age = 0,
+                            Alcohol = true,
+                            AlcoholDetail = "flaška vodky denně",
+                            Allergies = "jahody - opuchne v obličeji",
                             Drugs = false,
                             DrugsDetail = false,
-                            Email = "jana.novakova@gmail.com",
-                            Name = "Jana Nováková",
-                            NationalId = "935617/4905",
-                            Phone = "655 475 877",
-                            Smoker = false,
-                            healthInsuranceCompany = 0
+                            Email = "rus@email.cz",
+                            HealthInsuranceCompany = 0,
+                            Name = "Ivan Rus",
+                            NationalId = "880824/5006",
+                            PersonalAnamnesis = "Testovací osobní anamnéza",
+                            PharmacologicalAnamnesis = "xyzal",
+                            Phone = "+420 370 279 403",
+                            Smoker = true,
+                            SmokingDetail = "krabička denně"
                         });
                 });
 

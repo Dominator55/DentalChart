@@ -98,6 +98,7 @@ namespace DentistAPI.Controllers
                     });
                 }
                 toothRecord.ToothSurfaces = toothSurfaceRecords;
+                patient.ToothRecords = new List<ToothRecord>();
                 patient.ToothRecords.Add(toothRecord);
             }
             _context.Patients.Add(patient);

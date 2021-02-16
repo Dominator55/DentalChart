@@ -22,6 +22,8 @@ namespace DentistAPI
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Patient>().HasKey(p => p.Id);
+            modelBuilder.Entity<ToothRecord>().HasKey(t => t.Id);
+            modelBuilder.Entity<ToothSurfaceRecord>().HasKey(s => s.Id);
             modelBuilder.Entity<ClassificationOfDisease>().HasKey(c => c.Id);
 
             #region Many to many

@@ -23,7 +23,7 @@ namespace DentistAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Patient",
+                name: "Patients",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -34,7 +34,7 @@ namespace DentistAPI.Migrations
                     Email = table.Column<string>(type: "text", nullable: true),
                     Phone = table.Column<string>(type: "text", nullable: true),
                     Age = table.Column<int>(type: "integer", nullable: false),
-                    healthInsuranceCompany = table.Column<int>(type: "integer", nullable: false),
+                    HealthInsuranceCompany = table.Column<int>(type: "integer", nullable: false),
                     PersonalAnamnesis = table.Column<string>(type: "text", nullable: true),
                     Allergies = table.Column<string>(type: "text", nullable: true),
                     PharmacologicalAnamnesis = table.Column<string>(type: "text", nullable: true),
@@ -47,11 +47,11 @@ namespace DentistAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Patient", x => x.Id);
+                    table.PrimaryKey("PK_Patients", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tooth",
+                name: "Teeth",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -61,7 +61,7 @@ namespace DentistAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tooth", x => x.Id);
+                    table.PrimaryKey("PK_Teeth", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -91,15 +91,15 @@ namespace DentistAPI.Migrations
                 {
                     table.PrimaryKey("PK_Encounter", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Encounter_Patient_PatientId",
+                        name: "FK_Encounter_Patients_PatientId",
                         column: x => x.PatientId,
-                        principalTable: "Patient",
+                        principalTable: "Patients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ToothRecord",
+                name: "ToothRecords",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -110,17 +110,17 @@ namespace DentistAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ToothRecord", x => x.Id);
+                    table.PrimaryKey("PK_ToothRecords", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ToothRecord_Patient_PatientId",
+                        name: "FK_ToothRecords_Patients_PatientId",
                         column: x => x.PatientId,
-                        principalTable: "Patient",
+                        principalTable: "Patients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ToothRecord_Tooth_ToothId",
+                        name: "FK_ToothRecords_Teeth_ToothId",
                         column: x => x.ToothId,
-                        principalTable: "Tooth",
+                        principalTable: "Teeth",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -136,9 +136,9 @@ namespace DentistAPI.Migrations
                 {
                     table.PrimaryKey("PK_ToothToothSurface", x => new { x.ToothId, x.SurfaceId });
                     table.ForeignKey(
-                        name: "FK_ToothToothSurface_Tooth_ToothId",
+                        name: "FK_ToothToothSurface_Teeth_ToothId",
                         column: x => x.ToothId,
-                        principalTable: "Tooth",
+                        principalTable: "Teeth",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -150,7 +150,7 @@ namespace DentistAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Diagnosis",
+                name: "Diagnoses",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -162,25 +162,25 @@ namespace DentistAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Diagnosis", x => x.Id);
+                    table.PrimaryKey("PK_Diagnoses", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Diagnosis_ClassificationOfDisease_ClassificationOfDiseaseId",
+                        name: "FK_Diagnoses_ClassificationOfDisease_ClassificationOfDiseaseId",
                         column: x => x.ClassificationOfDiseaseId,
                         principalTable: "ClassificationOfDisease",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
-                        name: "FK_Diagnosis_Encounter_EncounterId",
+                        name: "FK_Diagnoses_Encounter_EncounterId",
                         column: x => x.EncounterId,
                         principalTable: "Encounter",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Diagnosis_Tooth_ToothId",
+                        name: "FK_Diagnoses_ToothRecords_ToothId",
                         column: x => x.ToothId,
-                        principalTable: "Tooth",
+                        principalTable: "ToothRecords",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -191,22 +191,15 @@ namespace DentistAPI.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ToothRecordId = table.Column<int>(type: "integer", nullable: true),
                     ToothSurfaceId = table.Column<int>(type: "integer", nullable: true),
-                    State = table.Column<int>(type: "integer", nullable: false),
-                    DiagnosisId = table.Column<int>(type: "integer", nullable: true)
+                    State = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ToothSurfaceRecord", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ToothSurfaceRecord_Diagnosis_DiagnosisId",
-                        column: x => x.DiagnosisId,
-                        principalTable: "Diagnosis",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ToothSurfaceRecord_ToothRecord_ToothRecordId",
+                        name: "FK_ToothSurfaceRecord_ToothRecords_ToothRecordId",
                         column: x => x.ToothRecordId,
-                        principalTable: "ToothRecord",
+                        principalTable: "ToothRecords",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -217,32 +210,61 @@ namespace DentistAPI.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.InsertData(
-                table: "Patient",
-                columns: new[] { "Id", "Address", "Age", "Alcohol", "AlcoholDetail", "Allergies", "Drugs", "DrugsDetail", "Email", "Name", "NationalId", "PersonalAnamnesis", "PharmacologicalAnamnesis", "Phone", "Smoker", "SmokingDetail", "healthInsuranceCompany" },
-                values: new object[] { 1, "Jabloňová 16 Brno 62100", 28, false, null, null, false, false, "jana.novakova@gmail.com", "Jana Nováková", "935617/4905", null, null, "655 475 877", false, null, 0 });
+            migrationBuilder.CreateTable(
+                name: "ToothSurfaceRecordDiagnoses",
+                columns: table => new
+                {
+                    ToothSurfaceRecordId = table.Column<int>(type: "integer", nullable: false),
+                    DiagnosisId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ToothSurfaceRecordDiagnoses", x => new { x.DiagnosisId, x.ToothSurfaceRecordId });
+                    table.ForeignKey(
+                        name: "FK_ToothSurfaceRecordDiagnoses_Diagnoses_DiagnosisId",
+                        column: x => x.DiagnosisId,
+                        principalTable: "Diagnoses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ToothSurfaceRecordDiagnoses_ToothSurfaceRecord_ToothSurface~",
+                        column: x => x.ToothSurfaceRecordId,
+                        principalTable: "ToothSurfaceRecord",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
             migrationBuilder.InsertData(
-                table: "Tooth",
+                table: "ClassificationOfDisease",
+                columns: new[] { "Id", "Code", "Name" },
+                values: new object[] { 1, "K02", "Zubní kaz" });
+
+            migrationBuilder.InsertData(
+                table: "Patients",
+                columns: new[] { "Id", "Address", "Age", "Alcohol", "AlcoholDetail", "Allergies", "Drugs", "DrugsDetail", "Email", "HealthInsuranceCompany", "Name", "NationalId", "PersonalAnamnesis", "PharmacologicalAnamnesis", "Phone", "Smoker", "SmokingDetail" },
+                values: new object[] { 1, "Kartouzská 8 Brno", 0, true, "flaška vodky denně", "jahody - opuchne v obličeji", false, false, "rus@email.cz", 0, "Ivan Rus", "880824/5006", "Testovací osobní anamnéza", "xyzal", "+420 370 279 403", true, "krabička denně" });
+
+            migrationBuilder.InsertData(
+                table: "Teeth",
                 columns: new[] { "Id", "Deciduous", "Localization" },
                 values: new object[,]
                 {
-                    { 32, false, "48" },
-                    { 31, false, "47" },
-                    { 30, false, "46" },
-                    { 29, false, "45" },
-                    { 28, false, "44" },
-                    { 27, false, "43" },
-                    { 26, false, "42" },
-                    { 25, false, "41" },
-                    { 24, false, "38" },
-                    { 23, false, "37" },
-                    { 22, false, "36" },
+                    { 20, false, "34" },
                     { 21, false, "35" },
-                    { 19, false, "33" },
+                    { 22, false, "36" },
+                    { 23, false, "37" },
+                    { 24, false, "38" },
+                    { 25, false, "41" },
+                    { 26, false, "42" },
+                    { 27, false, "43" },
+                    { 28, false, "44" },
+                    { 29, false, "45" },
+                    { 30, false, "46" },
+                    { 31, false, "47" },
+                    { 32, false, "48" },
                     { 18, false, "32" },
                     { 17, false, "31" },
-                    { 20, false, "34" },
+                    { 19, false, "33" },
                     { 15, false, "27" },
                     { 1, false, "11" },
                     { 2, false, "12" },
@@ -444,18 +466,18 @@ namespace DentistAPI.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Diagnosis_ClassificationOfDiseaseId",
-                table: "Diagnosis",
+                name: "IX_Diagnoses_ClassificationOfDiseaseId",
+                table: "Diagnoses",
                 column: "ClassificationOfDiseaseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Diagnosis_EncounterId",
-                table: "Diagnosis",
+                name: "IX_Diagnoses_EncounterId",
+                table: "Diagnoses",
                 column: "EncounterId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Diagnosis_ToothId",
-                table: "Diagnosis",
+                name: "IX_Diagnoses_ToothId",
+                table: "Diagnoses",
                 column: "ToothId");
 
             migrationBuilder.CreateIndex(
@@ -464,19 +486,14 @@ namespace DentistAPI.Migrations
                 column: "PatientId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ToothRecord_PatientId",
-                table: "ToothRecord",
+                name: "IX_ToothRecords_PatientId",
+                table: "ToothRecords",
                 column: "PatientId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ToothRecord_ToothId",
-                table: "ToothRecord",
+                name: "IX_ToothRecords_ToothId",
+                table: "ToothRecords",
                 column: "ToothId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ToothSurfaceRecord_DiagnosisId",
-                table: "ToothSurfaceRecord",
-                column: "DiagnosisId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ToothSurfaceRecord_ToothRecordId",
@@ -489,6 +506,11 @@ namespace DentistAPI.Migrations
                 column: "ToothSurfaceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ToothSurfaceRecordDiagnoses_ToothSurfaceRecordId",
+                table: "ToothSurfaceRecordDiagnoses",
+                column: "ToothSurfaceRecordId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ToothToothSurface_SurfaceId",
                 table: "ToothToothSurface",
                 column: "SurfaceId");
@@ -497,19 +519,16 @@ namespace DentistAPI.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ToothSurfaceRecord");
+                name: "ToothSurfaceRecordDiagnoses");
 
             migrationBuilder.DropTable(
                 name: "ToothToothSurface");
 
             migrationBuilder.DropTable(
-                name: "Diagnosis");
+                name: "Diagnoses");
 
             migrationBuilder.DropTable(
-                name: "ToothRecord");
-
-            migrationBuilder.DropTable(
-                name: "ToothSurfaces");
+                name: "ToothSurfaceRecord");
 
             migrationBuilder.DropTable(
                 name: "ClassificationOfDisease");
@@ -518,10 +537,16 @@ namespace DentistAPI.Migrations
                 name: "Encounter");
 
             migrationBuilder.DropTable(
-                name: "Tooth");
+                name: "ToothRecords");
 
             migrationBuilder.DropTable(
-                name: "Patient");
+                name: "ToothSurfaces");
+
+            migrationBuilder.DropTable(
+                name: "Patients");
+
+            migrationBuilder.DropTable(
+                name: "Teeth");
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace DentistAPI.Migrations
 {
-    public partial class patientkey : Migration
+    public partial class keyGen : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

@@ -11,7 +11,7 @@ namespace DentistAPI.Models
         public string Email { get; set; }
         public string Phone { get; set; }
         public int Age { get; set; }
-        public HealthInsuranceCompanies healthInsuranceCompany { get; set; }
+        public HealthInsuranceCompanies HealthInsuranceCompany { get; set; }
         public string PersonalAnamnesis { get; set; }
         public string Allergies { get; set; }
         public string PharmacologicalAnamnesis { get; set; }

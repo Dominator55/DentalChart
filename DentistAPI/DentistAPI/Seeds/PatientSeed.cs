@@ -12,21 +12,23 @@ namespace DentistAPI.Seeds
         {
             new Patient
             {
-                Id = 1,
-                NationalId = "935617/4905",
-                Name = "Jana Nováková",
-                Address = "Jabloňová 16 Brno 62100",
-                Phone = "655 475 877",
-                Email = "jana.novakova@gmail.com",
-                Age = 28,
-                healthInsuranceCompany = HealthInsuranceCompanies.VZP,
-                Encounters = new List<Encounter>()
-                {
-                    new Encounter(){
-                        Date = new DateTime(),
-                        ReportText = "Test zpráva",
-                        }
-                }
+                  Id= 1,
+                  NationalId= "880824/5006",
+                  Name= "Ivan Rus",
+                  Address= "Kartouzská 8 Brno",
+                  Email= "rus@email.cz",
+                  Phone= "+420 370 279 403",
+                  Age= 0,
+                  HealthInsuranceCompany= HealthInsuranceCompanies.VZP,
+                  PersonalAnamnesis= "Testovací osobní anamnéza",
+                  Allergies= "jahody - opuchne v obličeji",
+                  PharmacologicalAnamnesis= "xyzal",
+                  Smoker= true,
+                  SmokingDetail= "krabička denně",
+                  Alcohol= true,
+                  AlcoholDetail= "flaška vodky denně",
+                  Drugs= false,
+                  DrugsDetail= false
             }
         };
         public static void Seed(ModelBuilder modelBuilder)
