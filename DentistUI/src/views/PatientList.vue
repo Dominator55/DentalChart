@@ -6,10 +6,10 @@
   </div>
 </template>
 
-<script>
+<script lang='ts'>
 // @ is an alias to /src'
 
-import PatientService from '@/services/PatientsService'
+import PatientService from '../services/PatientsService'
 
 export default {
   name: 'Home',

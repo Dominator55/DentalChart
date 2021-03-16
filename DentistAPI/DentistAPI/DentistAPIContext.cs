@@ -10,20 +10,33 @@ namespace DentistAPI
         public DentistAPIContext(DbContextOptions<DentistAPIContext> options) : base(options)
         {
         }
+        #region List entities creation
         public DbSet<Tooth> Teeth { get; set; }
         public DbSet<ToothSurface> ToothSurfaces { get; set; }
+        public DbSet<ClassificationOfDisease> ClassificationOfDiseases { get; set; }
+        #endregion
+
+        #region Basic entites creation
+        public DbSet<Patient> Patients { get; set; }
+        public DbSet<DentistAPI.Models.Encounter> Encounter { get; set; }
+        public DbSet<ToothRecord> ToothRecords { get; set; }
+        public DbSet<ToothSurfaceRecord> ToothSurfaceRecords { get; set; }
+        public DbSet<Diagnosis> Diagnoses { get; set; }
+        #endregion
+
+        #region N:N entities creation 
         public DbSet<ToothToothSurface> ToothToothSurface { get; set; }
 
-        public DbSet<Patient> Patients { get; set; }
-        public DbSet<ToothRecord> ToothRecords { get; set; }
-        public DbSet<Diagnosis> Diagnoses { get; set; }
         public DbSet<ToothSurfaceRecordDiagnosis> ToothSurfaceRecordDiagnoses { get; set; }
+        #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Patient>().HasKey(p => p.Id);
+            modelBuilder.Entity<Encounter>().HasKey(e => e.Id);
             modelBuilder.Entity<ToothRecord>().HasKey(t => t.Id);
             modelBuilder.Entity<ToothSurfaceRecord>().HasKey(s => s.Id);
+            modelBuilder.Entity<Diagnosis>().HasKey(d => d.Id);
             modelBuilder.Entity<ClassificationOfDisease>().HasKey(c => c.Id);
 
             #region Many to many

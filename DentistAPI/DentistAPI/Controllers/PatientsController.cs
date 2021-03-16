@@ -25,7 +25,7 @@ namespace DentistAPI.Controllers
         {
             return await _context.Patients.ToListAsync();
         }
-
+ 
         // GET: api/Patients/5
         [HttpGet("{id}")]
         [EnableCors(origins: "*", headers: "*", methods: "*")]
@@ -34,7 +34,8 @@ namespace DentistAPI.Controllers
             var patient = await _context.Patients
                 .Include(p => p.ToothRecords).ThenInclude(t => t.ToothSurfaces).ThenInclude(ts => ts.ToothSurface)
                 .Include(p => p.ToothRecords).ThenInclude(t => t.Tooth)
-                .Include(p => p.Encounters).ThenInclude(e => e.Diagnoses)
+                .Include(p => p.Encounters).ThenInclude(e => e.Diagnoses).ThenInclude(d=> d.ClassificationOfDisease)
+                .Include(p => p.Encounters).ThenInclude(e => e.Diagnoses).ThenInclude(d => d.Tooth)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (patient == null)
@@ -91,11 +92,13 @@ namespace DentistAPI.Controllers
                 List<ToothSurfaceRecord> toothSurfaceRecords = new List<ToothSurfaceRecord>();
                 foreach (ToothToothSurface toothToothSurface in tooth.ToothToothSurface)
                 {
-                    toothSurfaceRecords.Add(new ToothSurfaceRecord()
+                    ToothSurfaceRecord toothSurfaceRecord = new ToothSurfaceRecord()
                     {
                         ToothSurface = toothToothSurface.Surface,
                         ToothRecord = toothRecord
-                    });
+                    };
+                    var x = _context.ToothSurfaceRecords.Add(toothSurfaceRecord);
+                    toothSurfaceRecords.Add(toothSurfaceRecord);
                 }
                 toothRecord.ToothSurfaces = toothSurfaceRecords;
                 patient.ToothRecords = new List<ToothRecord>();

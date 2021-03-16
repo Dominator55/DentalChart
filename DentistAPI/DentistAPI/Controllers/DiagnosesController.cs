@@ -78,6 +78,9 @@ namespace DentistAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Diagnosis>> PostDiagnosis(Diagnosis diagnosis)
         {
+            diagnosis.Encounter = _context.Encounter.Find(diagnosis.Encounter.Id);
+            diagnosis.Tooth = _context.ToothRecords.Find(diagnosis.Tooth.Id);
+            diagnosis.ClassificationOfDisease = _context.ClassificationOfDiseases.Find(diagnosis.ClassificationOfDisease.Id);
             _context.Diagnoses.Add(diagnosis);
             await _context.SaveChangesAsync();
 

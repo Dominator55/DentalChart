@@ -3,15 +3,17 @@ using System;
 using DentistAPI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DentistAPI.Migrations
 {
     [DbContext(typeof(DentistAPIContext))]
-    partial class DentistAPIContextModelSnapshot : ModelSnapshot
+    [Migration("20210310071709_encounterKey")]
+    partial class encounterKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -496,7 +498,7 @@ namespace DentistAPI.Migrations
 
                     b.HasIndex("ToothSurfaceId");
 
-                    b.ToTable("ToothSurfaceRecords");
+                    b.ToTable("ToothSurfaceRecord");
                 });
 
             modelBuilder.Entity("DentistAPI.Models.ToothSurfaceRecordDiagnosis", b =>
