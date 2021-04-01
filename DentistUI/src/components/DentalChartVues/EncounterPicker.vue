@@ -10,6 +10,7 @@
             v-for="encounter in encounters"
             :key="encounter.id"
             class="encounterButton"
+            v-on:click="$emit('encounterChange', encounter.id)"
             >
             <div>{{encounter.date.toLocaleDateString()}}</div>
             </div>
@@ -21,29 +22,24 @@
 export default {
   name: 'EncounterPicker',
  props:{
-     SelectedEncounterDate: Date
+     SelectedEncounterDate: Date,
+     encounters: []
  },
  data() {
      return {
-        open: Boolean,
-        encounters:[
-            {id:1, date: new Date(2020,11,4)},
-            {id:2,date: new Date(2019,10,4)},
-            {id:3,date: new Date(2019,7,4)} 
-        ]
+        open: Boolean
      }
  },
  created() {
     this.open=false
  },
  methods: {
-    showWindow(){this.open=!this.open}
+    showWindow: function(){this.open=!this.open},
  },
 }
 </script>
 <style scoped>
 .encounterPicker{
-    /* border: solid; */
     text-align: center;
 }
 button{

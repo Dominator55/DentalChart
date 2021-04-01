@@ -12,7 +12,8 @@ namespace DentistAPI.Seeds
             {
                 Id = 1,
                 Code = "K02",
-                Name = "Zubní kaz"
+                Name = "Zubní kaz",
+                DisplayName = "Decay"
             }
         };
         public static void Seed(ModelBuilder modelBuilder)

@@ -1,52 +1,54 @@
 
 <template>
     <div>
-        <label class="header">Diagnosis</label>
-        <div class="tool" v-on:click="onClickEncounter" v-bind:class="getClass('encounter')">
+        <select class="viewSelector">
+            <option>
+            <label>Tools</label>
+            </option>
+        </select>
+        <div class="tool" v-on:click="$emit('toolChanged', 'Select')" v-bind:class="getClass('Select')">
+            <img src="../../assets/select.png">
+            <label>Select</label>
+        </div>
+        <div class="tool" v-on:click="$emit('toolChanged', 'Delete')" v-bind:class="getClass('Delete')">
+            <img src="../../assets/delete.png">
+            <label>Delete</label>
+        </div>
+        <div class="tool" v-on:click="$emit('toolChanged', 'Decay')" v-bind:class="getClass('Decay')">
             <img src="../../assets/toothDecay.png">
             <label>Decay</label>
+        </div>
+        <div class="tool" v-on:click="$emit('toolChanged', 'Treat')" v-bind:class="getClass('Treat')">
+            <img src="../../assets/tools.png">
+            <label>Treat</label>
+        </div>
+        <div class="tool" v-on:click="$emit('toolChanged', 'Diagnose')" v-bind:class="getClass('Diagnose')">
+            <img src="../../assets/Diagnosis.png">
+            <label>Diagnose</label>
+        </div>
+        <div class="tool" v-on:click="$emit('toolChanged', 'WhiteFilling')" v-bind:class="getClass('WhiteFilling')">
+            <img src="../../assets/Diagnosis.png">
+            <label>White Filling</label>
         </div>
     </div>
 </template>
 
 <script>
+import DiagnosesService from '@/services/DiagnosesService'
 
 export default {
-    name: 'EncounterPicker',
+    name: 'DecayPicker',
+    props:{
+        toolSelected: String
+    },
     methods: {
-        onClickEncounter: function() {
-            // this.$parent.$data.toolSelected = {
-            //     onClickFunction: function(click, ) {
-            //         var parent = click.target.parentElement
-            //         parent.children.forEach(child => {
-            //             if (child.style.fill != "rgb(19, 18, 18)") {
-            //                 child.style.fill = "grey"
-            //             }
-            //         });
-            //         parent.setAttribute("class", "changed")
-            //         console.log(parent)
-            //     }
-            // }
-            // this.selectedTool = "encounter"
-            this.$parent.toolSelected = {
-                onClickFunction: function(click, ){
-                    var parent = click.target.parentElement
-                    var localization = parent.id.split('t')[1]
-                    var tooth = this.$parent.patient.to
-                    this.$parent.diagnosis.push({
-                    
-
-                    })
-                    parent.children.forEach(child => {
-                        if (child.style.fill != "rgb(19, 18, 18)") {
-                            child.style.fill = "grey"
-                        }
-                    });
-                }
-            }
+        onClickTool: function(name) {
+            console.log(name);
+            this.$parent.$data.toolSelected = name
+            this.selectedTool = name
         },
         getClass: function(name) {
-            if (name == this.selectedTool)
+            if (name == this.toolSelected)
                 return "toolSelected"
             else
                 return "tool"
@@ -77,10 +79,11 @@ label {
     margin: 5px;
 }
 
-.header {
-    font-weight: bold;
+.viewSelector{
+    font-size: 30px;
+    color: rgb(47, 47, 75);
+    border-width: 0px;
 }
-
 .tool {
     flex-direction: row;
 }

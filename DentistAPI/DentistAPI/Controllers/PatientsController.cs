@@ -35,7 +35,11 @@ namespace DentistAPI.Controllers
                 .Include(p => p.ToothRecords).ThenInclude(t => t.ToothSurfaces).ThenInclude(ts => ts.ToothSurface)
                 .Include(p => p.ToothRecords).ThenInclude(t => t.Tooth)
                 .Include(p => p.Encounters).ThenInclude(e => e.Diagnoses).ThenInclude(d=> d.ClassificationOfDisease)
-                .Include(p => p.Encounters).ThenInclude(e => e.Diagnoses).ThenInclude(d => d.Tooth)
+                .Include(p => p.Encounters).ThenInclude(e => e.Diagnoses).ThenInclude(d => d.ToothRecord).ThenInclude(t=>t.Tooth)
+                .Include(p => p.Encounters).ThenInclude(e => e.Diagnoses).ThenInclude(d=>d.Encounter)
+                .Include(p => p.Encounters).ThenInclude(e => e.ProcedureRecords).ThenInclude(p => p.Procedure)
+                .Include(p => p.Encounters).ThenInclude(e => e.ProcedureRecords).ThenInclude(p => p.ToothRecord).ThenInclude(t => t.Tooth)
+                .Include(p => p.Encounters).ThenInclude(e => e.ProcedureRecords).ThenInclude(p => p.Encounter)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (patient == null)
@@ -82,6 +86,7 @@ namespace DentistAPI.Controllers
         public async Task<ActionResult<Patient>> PostPatient(Patient patient)
         {
             List<Tooth> teeth = await _context.Teeth.Include(t => t.ToothToothSurface).ThenInclude(t => t.Surface).ToListAsync();
+            patient.ToothRecords = new List<ToothRecord>();
             foreach (Tooth tooth in teeth)
             {
                 ToothRecord toothRecord = new ToothRecord()
@@ -97,11 +102,11 @@ namespace DentistAPI.Controllers
                         ToothSurface = toothToothSurface.Surface,
                         ToothRecord = toothRecord
                     };
-                    var x = _context.ToothSurfaceRecords.Add(toothSurfaceRecord);
+                   // _context.ToothSurfaceRecords.Add(toothSurfaceRecord);
                     toothSurfaceRecords.Add(toothSurfaceRecord);
                 }
                 toothRecord.ToothSurfaces = toothSurfaceRecords;
-                patient.ToothRecords = new List<ToothRecord>();
+//                _context.ToothRecords.Add(toothRecord);
                 patient.ToothRecords.Add(toothRecord);
             }
             _context.Patients.Add(patient);

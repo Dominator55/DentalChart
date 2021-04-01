@@ -6,15 +6,15 @@
   </div>
 </template>
 
-<script lang='ts'>
+<script>
 // @ is an alias to /src'
 
-import PatientService from '../services/PatientsService'
+import PatientService from '@/services/PatientsService'
 
 export default {
   name: 'Home',
   mounted: function(){
-        console.log("mounted")
+        console.log('mounted')
         PatientService.GetPatientsAsList().then(response=>{
           console.log(response.data)
           this.patients=response.data;
@@ -23,8 +23,8 @@ export default {
   data() {
     return {
       patients: [],
-      DentistName: "MUDr. Petr Machač",
-      PatientName: "Jana Nováková"
+      DentistName: 'MUDr. Petr Machač',
+      PatientName: 'Jana Nováková'
     }
   },
 }

@@ -3,20 +3,22 @@ using System;
 using DentistAPI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DentistAPI.Migrations
 {
     [DbContext(typeof(DentistAPIContext))]
-    partial class DentistAPIContextModelSnapshot : ModelSnapshot
+    [Migration("20210322173846_diagnosisNoteAdded")]
+    partial class diagnosisNoteAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.4")
+                .HasAnnotation("ProductVersion", "5.0.3")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             modelBuilder.Entity("DentistAPI.Models.ClassificationOfDisease", b =>
@@ -29,18 +31,10 @@ namespace DentistAPI.Migrations
                     b.Property<string>("Code")
                         .HasColumnType("text");
 
-                    b.Property<int?>("DefaultTreatmentId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("DisplayName")
-                        .HasColumnType("text");
-
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DefaultTreatmentId");
 
                     b.ToTable("ClassificationOfDiseases");
 
@@ -49,7 +43,6 @@ namespace DentistAPI.Migrations
                         {
                             Id = 1,
                             Code = "K02",
-                            DisplayName = "Decay",
                             Name = "Zubní kaz"
                         });
                 });
@@ -73,7 +66,7 @@ namespace DentistAPI.Migrations
                     b.Property<int>("State")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ToothRecordId")
+                    b.Property<int?>("ToothId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -82,7 +75,7 @@ namespace DentistAPI.Migrations
 
                     b.HasIndex("EncounterId");
 
-                    b.HasIndex("ToothRecordId");
+                    b.HasIndex("ToothId");
 
                     b.ToTable("Diagnoses");
                 });
@@ -190,68 +183,6 @@ namespace DentistAPI.Migrations
                             Smoker = true,
                             SmokingDetail = "krabička denně"
                         });
-                });
-
-            modelBuilder.Entity("DentistAPI.Models.Procedure", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<string>("Code")
-                        .HasColumnType("text");
-
-                    b.Property<string>("DisplayName")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Procedures");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Code = "00920",
-                            DisplayName = "White Filling",
-                            Name = "Ošetření stálého zubu fotokompozitní výplní"
-                        });
-                });
-
-            modelBuilder.Entity("DentistAPI.Models.ProcedureRecord", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<int?>("EncounterId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("ProcedureId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("ReasonId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("ToothRecordId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EncounterId");
-
-                    b.HasIndex("ProcedureId");
-
-                    b.HasIndex("ReasonId");
-
-                    b.HasIndex("ToothRecordId");
-
-                    b.ToTable("ProcedureRecords");
                 });
 
             modelBuilder.Entity("DentistAPI.Models.Tooth", b =>
@@ -1405,15 +1336,6 @@ namespace DentistAPI.Migrations
                         });
                 });
 
-            modelBuilder.Entity("DentistAPI.Models.ClassificationOfDisease", b =>
-                {
-                    b.HasOne("DentistAPI.Models.Procedure", "DefaultTreatment")
-                        .WithMany()
-                        .HasForeignKey("DefaultTreatmentId");
-
-                    b.Navigation("DefaultTreatment");
-                });
-
             modelBuilder.Entity("DentistAPI.Models.Diagnosis", b =>
                 {
                     b.HasOne("DentistAPI.Models.ClassificationOfDisease", "ClassificationOfDisease")
@@ -1426,16 +1348,16 @@ namespace DentistAPI.Migrations
                         .HasForeignKey("EncounterId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("DentistAPI.Models.ToothRecord", "ToothRecord")
+                    b.HasOne("DentistAPI.Models.ToothRecord", "Tooth")
                         .WithMany("Diagnoses")
-                        .HasForeignKey("ToothRecordId")
+                        .HasForeignKey("ToothId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("ClassificationOfDisease");
 
                     b.Navigation("Encounter");
 
-                    b.Navigation("ToothRecord");
+                    b.Navigation("Tooth");
                 });
 
             modelBuilder.Entity("DentistAPI.Models.Encounter", b =>
@@ -1446,36 +1368,6 @@ namespace DentistAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Patient");
-                });
-
-            modelBuilder.Entity("DentistAPI.Models.ProcedureRecord", b =>
-                {
-                    b.HasOne("DentistAPI.Models.Encounter", "Encounter")
-                        .WithMany("ProcedureRecords")
-                        .HasForeignKey("EncounterId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("DentistAPI.Models.Procedure", "Procedure")
-                        .WithMany()
-                        .HasForeignKey("ProcedureId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("DentistAPI.Models.Diagnosis", "Reason")
-                        .WithMany("Treatments")
-                        .HasForeignKey("ReasonId");
-
-                    b.HasOne("DentistAPI.Models.ToothRecord", "ToothRecord")
-                        .WithMany("ProcedureRecords")
-                        .HasForeignKey("ToothRecordId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("Encounter");
-
-                    b.Navigation("Procedure");
-
-                    b.Navigation("Reason");
-
-                    b.Navigation("ToothRecord");
                 });
 
             modelBuilder.Entity("DentistAPI.Models.ToothRecord", b =>
@@ -1551,15 +1443,11 @@ namespace DentistAPI.Migrations
             modelBuilder.Entity("DentistAPI.Models.Diagnosis", b =>
                 {
                     b.Navigation("ToothSurfaces");
-
-                    b.Navigation("Treatments");
                 });
 
             modelBuilder.Entity("DentistAPI.Models.Encounter", b =>
                 {
                     b.Navigation("Diagnoses");
-
-                    b.Navigation("ProcedureRecords");
                 });
 
             modelBuilder.Entity("DentistAPI.Models.Patient", b =>
@@ -1577,8 +1465,6 @@ namespace DentistAPI.Migrations
             modelBuilder.Entity("DentistAPI.Models.ToothRecord", b =>
                 {
                     b.Navigation("Diagnoses");
-
-                    b.Navigation("ProcedureRecords");
 
                     b.Navigation("ToothSurfaces");
                 });

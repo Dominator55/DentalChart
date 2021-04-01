@@ -32,7 +32,11 @@ namespace DentistAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Diagnosis>> GetDiagnosis(int id)
         {
-            var diagnosis = await _context.Diagnoses.FindAsync(id);
+            var diagnosis = await _context.Diagnoses
+                .Include(d=>d.ToothRecord).ThenInclude(t=>t.Tooth)
+                .Include(d => d.ToothRecord).ThenInclude(t => t.ToothSurfaces)
+                .Include(d => d.Encounter)
+                .FirstOrDefaultAsync(d=>d.Id==id);
 
             if (diagnosis == null)
             {
@@ -45,7 +49,7 @@ namespace DentistAPI.Controllers
         // PUT: api/Diagnoses/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutDiagnosis(int id, Diagnosis diagnosis)
+        public async Task<ActionResult<Diagnosis>> PutDiagnosis(int id, Diagnosis diagnosis)
         {
             if (id != diagnosis.Id)
             {
@@ -56,6 +60,8 @@ namespace DentistAPI.Controllers
 
             try
             {
+                diagnosis.ToothRecord = _context.ToothRecords.First(t => t.Id == diagnosis.ToothRecord.Id);
+                diagnosis.ClassificationOfDisease = _context.ClassificationOfDiseases.Find(diagnosis.ClassificationOfDisease.Id);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -70,7 +76,7 @@ namespace DentistAPI.Controllers
                 }
             }
 
-            return NoContent();
+            return diagnosis;
         }
 
         // POST: api/Diagnoses
@@ -78,13 +84,16 @@ namespace DentistAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Diagnosis>> PostDiagnosis(Diagnosis diagnosis)
         {
+            diagnosis.ToothRecord = _context.ToothRecords.First(t => t.Tooth.Localization == diagnosis.ToothRecord.Tooth.Localization && t.Patient.Id == diagnosis.Encounter.Patient.Id);
             diagnosis.Encounter = _context.Encounter.Find(diagnosis.Encounter.Id);
-            diagnosis.Tooth = _context.ToothRecords.Find(diagnosis.Tooth.Id);
             diagnosis.ClassificationOfDisease = _context.ClassificationOfDiseases.Find(diagnosis.ClassificationOfDisease.Id);
+            diagnosis.ToothSurfaces = new List<ToothSurfaceRecordDiagnosis>();
             _context.Diagnoses.Add(diagnosis);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetDiagnosis", new { id = diagnosis.Id }, diagnosis);
+            return await _context.Diagnoses
+                .Include(d=>d.ToothRecord).ThenInclude(t=>t.Tooth)    
+                .FirstOrDefaultAsync(d=>d.Id==diagnosis.Id);
         }
 
         // DELETE: api/Diagnoses/5

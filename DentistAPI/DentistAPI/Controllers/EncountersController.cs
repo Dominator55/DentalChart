@@ -79,6 +79,7 @@ namespace DentistAPI.Controllers
         public async Task<ActionResult<Encounter>> PostEncounter(Encounter encounter)
         {
             encounter.Patient = _context.Patients.Find(encounter.Patient.Id);
+            encounter.Diagnoses = new List<Diagnosis>();
             _context.Encounter.Add(encounter);
             await _context.SaveChangesAsync();
 

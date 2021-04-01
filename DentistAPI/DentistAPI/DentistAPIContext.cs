@@ -14,6 +14,7 @@ namespace DentistAPI
         public DbSet<Tooth> Teeth { get; set; }
         public DbSet<ToothSurface> ToothSurfaces { get; set; }
         public DbSet<ClassificationOfDisease> ClassificationOfDiseases { get; set; }
+        public DbSet<Procedure> Procedures { get; set; }
         #endregion
 
         #region Basic entites creation
@@ -22,6 +23,8 @@ namespace DentistAPI
         public DbSet<ToothRecord> ToothRecords { get; set; }
         public DbSet<ToothSurfaceRecord> ToothSurfaceRecords { get; set; }
         public DbSet<Diagnosis> Diagnoses { get; set; }
+        public DbSet<ProcedureRecord> ProcedureRecords { get; set; }
+
         #endregion
 
         #region N:N entities creation 
@@ -37,6 +40,7 @@ namespace DentistAPI
             modelBuilder.Entity<ToothRecord>().HasKey(t => t.Id);
             modelBuilder.Entity<ToothSurfaceRecord>().HasKey(s => s.Id);
             modelBuilder.Entity<Diagnosis>().HasKey(d => d.Id);
+            modelBuilder.Entity<Procedure>().HasKey(p => p.Id);
             modelBuilder.Entity<ClassificationOfDisease>().HasKey(c => c.Id);
 
             #region Many to many
@@ -85,6 +89,11 @@ namespace DentistAPI
                .WithMany(e => e.Diagnoses)
                .OnDelete(DeleteBehavior.Cascade);
 
+            //encounter has many produre records
+            modelBuilder.Entity<ProcedureRecord>()
+               .HasOne(p => p.Encounter)
+               .WithMany(e => e.ProcedureRecords)
+               .OnDelete(DeleteBehavior.Cascade);
 
             //patient has many tooth records
             modelBuilder.Entity<ToothRecord>()
@@ -98,15 +107,17 @@ namespace DentistAPI
                .WithMany(t => t.ToothSurfaces)
                .OnDelete(DeleteBehavior.Cascade);
 
-            //encounter has many diagnoses
+   
+            //tooth record has many diagnoses
             modelBuilder.Entity<Diagnosis>()
-                .HasOne(d => d.Encounter)
-                .WithMany(e => e.Diagnoses)
-                .OnDelete(DeleteBehavior.Cascade);
-            //tooth has many diagnoses
-            modelBuilder.Entity<Diagnosis>()
-                .HasOne(d => d.Tooth)
+                .HasOne(d => d.ToothRecord)
                 .WithMany(t => t.Diagnoses)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            //tooth record has many procedure records
+            modelBuilder.Entity<ProcedureRecord>()
+                .HasOne(p => p.ToothRecord)
+                .WithMany(t => t.ProcedureRecords)
                 .OnDelete(DeleteBehavior.Cascade);
 
             //diagnosis has one classification of disease
@@ -115,6 +126,16 @@ namespace DentistAPI
                 .WithMany()
                 .OnDelete(DeleteBehavior.SetNull);
 
+            //procedure record has one procedure
+            modelBuilder.Entity<ProcedureRecord>()
+                .HasOne(p => p.Procedure)
+                .WithMany()
+                .OnDelete(DeleteBehavior.SetNull);
+
+            //Procedure record has one diagnosis
+            modelBuilder.Entity<ProcedureRecord>()
+                .HasOne(pr => pr.Reason)
+                .WithMany(d => d.Treatments);
             #endregion
 
             ToothToothSurfaceSeed.Seed(modelBuilder);
@@ -122,6 +143,7 @@ namespace DentistAPI
             ToothSurfaceSeed.Seed(modelBuilder);
             PatientSeed.Seed(modelBuilder);
             ClassificationOfDiseaseSeed.Seed(modelBuilder);
+            ProcedureSeed.Seed(modelBuilder);
         }
     }
 }

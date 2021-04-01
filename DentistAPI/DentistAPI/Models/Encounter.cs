@@ -9,5 +9,6 @@ namespace DentistAPI.Models
         public Patient Patient { get; set; }
         public string ReportText { get; set; }
         public List<Diagnosis> Diagnoses { get; set; }
+        public List<ProcedureRecord> ProcedureRecords { get; set; }
     }
 }

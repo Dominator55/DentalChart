@@ -1,5 +1,4 @@
-
-<template>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -1888,39 +1887,3 @@
        x="27.314972"
        y="179.20425">Cerv</tspan></text>
 </svg>
-</template>
-
-<script>
-import HelperService from '@/services/HelperService'
-export default {
-  name: 'DentalChart',
-  props:{
-      diagnoses:[]
-  },
-  mounted: function(){
-     document.getElementById('denture').children.forEach(child=>child.addEventListener('mouseenter',this.mouseEnter))
-     document.getElementById('denture').children.forEach(child=>child.addEventListener('mouseleave',this.mouseLeave))
-     document.getElementById('denture').children.forEach(child=>child.addEventListener('click',this.$parent.onClick))
-  },
-  watch: {
-      diagnoses: function(val,old){
-         old.forEach(diagnosis=>{
-            HelperService.colorTooth(diagnosis.toothRecord.tooth.localization, 'grey','rgb(255, 255, 255)')
-         })
-         val.forEach(diagnosis=>{
-            HelperService.colorTooth(diagnosis.toothRecord.tooth.localization,'rgb(255, 255, 255)', 'grey')
-         })
-      }
-  },
-  methods: {
-     mouseEnter: function(event){
-        var localization = event.target.id.split('t')[1];
-        this.$emit('mouseEnter', localization)
-     },
-      mouseLeave: function(event){
-        var localization = event.target.id.split('t')[1];
-        this.$emit('mouseLeave', localization)
-     }
-  },
-}
-</script>

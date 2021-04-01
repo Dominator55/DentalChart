@@ -1,0 +1,17 @@
+{
+      "NationalId" :  "880824/5006",
+      "Name" :  "Ivan Rus",
+      "Address" :  "Kartouzská 8 Brno",
+      "Email" :  "rus@email.cz",
+      "Phone" :  "+420 370 279 403",
+      "Age" :  0,
+      "PersonalAnamnesis" :  "Testovací osobní anamnéza",
+      "Allergies" :  "jahody - opuchne v obličeji",
+      "PharmacologicalAnamnesis" :  "xyzal",
+      "Smoker" :  true,
+      "SmokingDetail" :  "krabička denně",
+      "Alcohol" :  true,
+      "AlcoholDetail" :  "flaška vodky denně",
+      "Drugs" :  false,
+      "DrugsDetail" :  false
+}

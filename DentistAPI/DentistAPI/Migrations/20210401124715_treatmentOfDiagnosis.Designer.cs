@@ -3,20 +3,22 @@ using System;
 using DentistAPI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DentistAPI.Migrations
 {
     [DbContext(typeof(DentistAPIContext))]
-    partial class DentistAPIContextModelSnapshot : ModelSnapshot
+    [Migration("20210401124715_treatmentOfDiagnosis")]
+    partial class treatmentOfDiagnosis
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
-                .HasAnnotation("ProductVersion", "5.0.4")
+                .HasAnnotation("ProductVersion", "5.0.3")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             modelBuilder.Entity("DentistAPI.Models.ClassificationOfDisease", b =>
@@ -32,9 +34,6 @@ namespace DentistAPI.Migrations
                     b.Property<int?>("DefaultTreatmentId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("DisplayName")
-                        .HasColumnType("text");
-
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
@@ -49,7 +48,6 @@ namespace DentistAPI.Migrations
                         {
                             Id = 1,
                             Code = "K02",
-                            DisplayName = "Decay",
                             Name = "Zubní kaz"
                         });
                 });
@@ -202,24 +200,12 @@ namespace DentistAPI.Migrations
                     b.Property<string>("Code")
                         .HasColumnType("text");
 
-                    b.Property<string>("DisplayName")
-                        .HasColumnType("text");
-
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.ToTable("Procedures");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Code = "00920",
-                            DisplayName = "White Filling",
-                            Name = "Ošetření stálého zubu fotokompozitní výplní"
-                        });
                 });
 
             modelBuilder.Entity("DentistAPI.Models.ProcedureRecord", b =>

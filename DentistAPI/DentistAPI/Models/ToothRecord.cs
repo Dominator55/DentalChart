@@ -11,6 +11,7 @@ namespace DentistAPI.Models
         public List<ToothSurfaceRecord> ToothSurfaces { get; set; }
 
         public List<Diagnosis> Diagnoses { get; set; }
+        public List<ProcedureRecord> ProcedureRecords { get; set; }
 
     }
 }

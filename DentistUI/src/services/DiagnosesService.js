@@ -1,18 +1,27 @@
 import axios from 'axios'
-export default class PatientService {
+export default class DiagnosesService {
     static async GetPatientDiagnosesAsList(){
         //TODO: getDiagnoses API call
     }
     
     static async CreateDiagnosis(diagnosis){
-        //TODO: create diagnosis API call
+        var result = await axios.post('https://localhost:44351/api/Diagnoses', diagnosis)
+        return result
     }
 
-    static async UpdateDiagnosis(diagnosis){
-        //TODO: update diagnosis api call
+    static async UpdateDiagnosis(diagnosis, id){
+        return await axios.put('https://localhost:44351/api/Diagnoses/'+id, diagnosis)
     }
 
     static async DeleteDiagnosis(id){
         //TODO: Delete diagnosis API call
+    }
+
+    static async GetClassificationOfDiseaseById(id){
+        return axios.get('https://localhost:44351/api/ClassificationOfDiseases/'+id)
+    }
+
+    static async GetClassificationsOfDisease(){
+        return await axios.get('https://localhost:44351/api/ClassificationOfDiseases/') 
     }
 }
