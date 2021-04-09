@@ -14,7 +14,7 @@ export default class ProcedureRecordsService {
     }
 
     static async DeleteProcedureRecord(id){
-        //TODO: Delete procedureRecord API call
+        return await axios.delete('https://localhost:44351/api/ProcedureRecords/'+id)
     }
 
     static async GetProcedureById(id){

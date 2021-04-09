@@ -1,5 +1,5 @@
 <template>
-  <Header>
+  <div class="header">
     <div class="patientName">
       <img class="icon" src="../assets/person.png" />
       <label>{{ this.Patient.name }}</label>
@@ -13,12 +13,12 @@
     <div class="dentistName">
       <label>{{ dentistName }}</label>
     </div>
-  </Header>
+  </div>
   <div class="body">
     <nav>
       <encounter-picker
         :SelectedEncounterDate="SelectedEncounter.date"
-        :encounters="Patient.encounters"
+        :encounters="Encounters"
         v-on:encounterChange="selectedEncounterChange"
       />
       <tool-picker
@@ -31,31 +31,30 @@
         :toothRecords="Patient.toothRecords"
         :toolSelected="toolSelected"
         :diagnoses="diagnoses"
+        :procedureRecords="procedureRecords"
         v-on:mouseEnter="mouseEnter"
         v-on:mouseLeave="mouseLeave"
       ></dental-chart>
     </div>
     <div class="nav">
-      <diagnosis-form
-        v-if="formDiagnosis != null"
-        :diagnosis="formDiagnosis"
-        :teeth="
-          Patient.toothRecords.sort((a, b) =>     //sorted tooth records to display in select 
-            parseInt(a.tooth.localization) > parseInt(b.tooth.localization)
-              ? 1
-              : -1
-          )
-        "
-        :encounters="Patient.encounters"
-        v-on:updateDiagnosis="updateDiagnosis"
-        v-on:cancelEdit="cancelEdit"
-      />
       <todays-records
-        :Diagnoses="diagnoses"
-        :Encounters="Patient.encounters"
-        :ToothRecords="Patient.toothRecords"
+        :Encounters="Encounters"
+        :ToothRecords="
+          Patient.toothRecords == null
+            ? null
+            : Patient.toothRecords.sort((
+                a,
+                b //sorted tooth records to display in select
+              ) =>
+                parseInt(a.tooth.localization) > parseInt(b.tooth.localization)
+                  ? 1
+                  : -1
+              )
+        "
+        :SelectedRecord="formRecord"
         v-on:mouseEnter="mouseEnter"
         v-on:mouseLeave="mouseLeave"
+        v-on:updateDiagnosis="updateDiagnosis"
       />
     </div>
   </div>
@@ -71,8 +70,8 @@ import ProcedureRecordsService from '@/services/ProcedureRecordsService'
 import ToothRecordsService from '@/services/ToothRecordsService'
 import TodaysRecords from '../components/DentalChartVues/RecordsList.vue'
 import HelperService from '@/services/HelperService'
-import DiagnosisForm from '../components/DentalChartVues/DiagnosisForm.vue'
 import Process from '@/components/DentalChartVues/Process'
+import {ClassificationsOfDiseaseEnum, ProceduresEnum} from '@/services/Enums'
 
 export default {
   name: 'DentalChartPage',
@@ -81,21 +80,21 @@ export default {
     EncounterPicker,
     ToolPicker,
     TodaysRecords,
-    DiagnosisForm,
     Process
   },
   data() {
     return {
       Patient: {},
-      dentistName: 'MUDr. Petr Machač',
+      dentistName: 'MUDr. Michal Novák',
       SelectedEncounter: {
           date: new Date(),
           Patient: this.Patient,
           diagnoses: [],
         },
       toolSelected: null,
+      Encounters: [],
       diagnoses: [],
-      formDiagnosis: null,
+      formRecord: null,
       procedureRecords: [],
     }
   },
@@ -103,10 +102,14 @@ export default {
     PatientService.GetPatientById(this.$route.params.id)
       .then((response) => {
         this.Patient = response.data
-        let encounters = response.data.encounters
-        this.diagnoses = HelperService.unpackDiagnosisFromEncounters(encounters)  //get all diagnoses in encounters
+        this.Encounters = response.data.encounters
+        this.diagnoses = HelperService.unpackDiagnosisFromEncounters(this.Encounters)  //get all diagnoses in encounters
+        this.procedureRecords = HelperService.unpackProcedureRecordsFromEncounters(this.Encounters)
         this.diagnoses.forEach(diagnosis => {
-            HelperService.colorTooth(diagnosis.toothRecord.tooth.localization, 'rgb(255, 255, 255)', 'grey')
+          HelperService.visualizeRecord(diagnosis)
+        })
+        this.procedureRecords.forEach(procedureRecord=>{
+          HelperService.visualizeRecord(procedureRecord)
         })
         let today = new Date()
         var mockEncounter =  {
@@ -115,7 +118,8 @@ export default {
           diagnoses: [],
           procedureRecords: [],
         }
-        var encounter =  response.data.encounters.find( 
+        this.Encounters.push(mockEncounter)
+        var encounter =  this.Encounters.find( 
           (e) => e.date.toDateString() == today.toDateString()
         ) //finds encounter on this day if existent
         this.SelectedEncounter = encounter==null ? mockEncounter : encounter
@@ -126,118 +130,202 @@ export default {
   },
   methods: {
     updateDiagnosis: function(diagnosis){
-      this.diagnoses[this.diagnoses.findIndex(d=>d.id == diagnosis.data.id)] = diagnosis.data
+      /* eslint-disable no-debugger */
+      debugger
+      /* eslint-enable no-debugger */
+      this.SelectedEncounter.diagnoses[this.SelectedEncounter.diagnoses.findIndex(d=>d.id == diagnosis.id)] = diagnosis
+      this.Encounters[this.Encounters.findIndex(e=>e.id==this.SelectedEncounter.id)] = this.SelectedEncounter
+      this.Encounters.push(this.Encounters.pop())
+      this.diagnoses = HelperService.unpackDiagnosisFromEncounters(this.Encounters)
     },
     toolChanged: function(tool){
       this.toolSelected = tool
     },
     selectedEncounterChange: function(id){
-      this.SelectedEncounter = this.Patient.encounters.find(e=>e.id==id)
-      var encounters = this.Patient.encounters.filter(e=>e.date <= this.SelectedEncounter.date)
-      this.diagnoses= HelperService.unpackDiagnosisFromEncounters(encounters)
-      this.diagnoses= HelperService.unpackProcedureRecordsFromEncounters(encounters)
+      this.SelectedEncounter = this.Encounters.find(e=>e.id==id)
+      this.Encounters = this.Encounters.filter(e=>e.date <= this.SelectedEncounter.date)
+      this.diagnoses= HelperService.unpackDiagnosisFromEncounters(this.Encounters)
+      this.diagnoses= HelperService.unpackProcedureRecordsFromEncounters(this.Encounters)
     },
 
-    cancelEdit: function(){     //for formDiagnosis cancelEdit event
-      this.formDiagnosis = null
+    cancelEdit: function(){     //for formRecord cancelEdit event
+      this.formRecord = null
     },
 
     mouseEnter: function(localization){   //for event of mouseenter on tooth
-      HelperService.colorTooth(localization, 'rgb(0, 0, 0)','red')
+      HelperService.selectTooth(localization)
     },
 
     mouseLeave: function(localization){   //for event of mouseleave on tooth
-      HelperService.colorTooth(localization, 'red', 'rgb(0, 0, 0)')
+      HelperService.unselectTooth(localization)
     },
 
+    addDiagnosis: async function(diagnosis){
+      var result = await DiagnosesService.CreateDiagnosis(diagnosis)
+      if (result.status >= 200 && result.status < 300) {
+        this.SelectedEncounter.diagnoses.push(result.data)
+        this.Encounters[this.Encounters.findIndex(e=>e.id==this.SelectedEncounter.id)] = this.SelectedEncounter
+        this.diagnoses.push(result.data)
+        HelperService.visualizeRecord(result.data)
+      }
+    },
+
+    removeDiagnosis: async function(diagnosis){
+      /* eslint-disable no-debugger */
+      debugger
+      /* eslint-enable no-debugger */
+      var result = await DiagnosesService.DeleteDiagnosis(diagnosis.id)
+      if (result.status >= 200 && result.status < 300) {
+        /* eslint-disable no-debugger */
+        debugger
+        /* eslint-enable no-debugger */
+        var localization = diagnosis.toothRecord.tooth.localization
+        this.SelectedEncounter.diagnoses = this.SelectedEncounter.diagnoses.filter(d=>d.id != diagnosis.id)
+        this.Encounters[this.Encounters.findIndex(e=>e.id==this.SelectedEncounter.id)] = this.SelectedEncounter
+        this.diagnoses = this.diagnoses.filter(d=>d.id != diagnosis.id)
+        var visualisationRecord  = this.getLastRecord(localization)
+        if(visualisationRecord!= null){
+          HelperService.visualizeRecord(visualisationRecord)
+        }
+        else{
+          HelperService.clearVisualization(localization)
+        }
+      }
+    },
+    
+    addProcedureRecord: async function(procedureRecord){
+      /* eslint-disable no-debugger */
+      debugger
+      /* eslint-enable no-debugger */
+      var result = await ProcedureRecordsService.CreateProcedureRecord(procedureRecord)
+      if (result.status >= 200 && result.status < 300) {
+        this.SelectedEncounter.procedureRecords.push(result.data)
+        this.Encounters[this.Encounters.findIndex(e=>e.id==this.SelectedEncounter.id)] = this.SelectedEncounter
+        this.procedureRecords.push(result.data)
+        HelperService.visualizeRecord(result.data)
+      }
+    },
+
+    removeProcedureRecord: async function(procedureRecord){
+      var result = await ProcedureRecordsService.DeleteProcedureRecord(procedureRecord.id)
+      if (result.status >= 200 && result.status < 300) {
+        var localization = procedureRecord.toothRecord.tooth.localization
+        this.SelectedEncounter.procedureRecords = this.SelectedEncounter.procedureRecords.filter(d=>d.id != procedureRecord.id)
+        this.Encounters[this.Encounters.findIndex(e=>e.id==this.SelectedEncounter.id)] = this.SelectedEncounter
+        this.procedureRecords = this.procedureRecords.filter(d=>d.id != procedureRecord.id)
+        var visualisationRecord  = this.getLastRecord(localization)
+        if(visualisationRecord!= null){
+          HelperService.visualizeRecord(visualisationRecord)
+        }
+        else{
+          HelperService.clearVisualization(localization)
+        }
+      }
+    },
+
+    getLastRecord: function(localization){
+      var deleteDiagnoses = this.diagnoses.filter(d=>d.toothRecord.tooth.localization==localization) 
+      var deleteProcedureRecords =  this.procedureRecords.filter(pr=>pr.toothRecord.tooth.localization==localization)
+      return deleteProcedureRecords.length!=0 ? deleteProcedureRecords[deleteProcedureRecords.length-1] : deleteDiagnoses[deleteDiagnoses.length-1]
+    },
+
+    getTodaysEncounter: async function(){  
+      var Encounter = this.SelectedEncounter
+      if (typeof Encounter.id == 'undefined' || Encounter.id == null) {   //if encounter is non existent, create one
+        var date = new Date()
+        date.setUTCHours(0, 0, 0, 0)    //only date needed
+        Encounter = {
+          date: date,
+          Patient: this.Patient
+        }
+        var result = await PatientService.CreateEncounter(Encounter)
+        this.SelectedEncounter = result.data  //switch selected encounter with the placeholder
+        this.Encounters.pop() //remove placeholder form encounter array
+        this.Encounters.push(result.data) //add newly created encounter to encounter array
+        return result.data
+      }
+      else{   //if encounter u
+        return Encounter
+      }
+    },
+
+    createDiagnosisObject: async function(classificationOfDiseaseId, localization){
+      var Encounter = await this.getTodaysEncounter()
+      return {
+        ClassificationOfDisease: { id: classificationOfDiseaseId },
+        Encounter: { 
+            id: Encounter.id,
+            Patient: { id: this.Patient.id }
+        },
+        ToothRecord: { 
+            Tooth: {
+                localization: localization
+            }
+        },
+      };
+    },
+    
+    createProcedureRecordObject: async function(procedureId, localization){
+      var Encounter = await this.getTodaysEncounter()
+      return {
+        Procedure: { id: procedureId },
+        Encounter: { 
+            id: Encounter.id,
+            Patient: { id: this.Patient.id }
+        },
+        ToothRecord: { 
+            Tooth: {
+                localization: localization
+            }
+        },
+      };
+    },
+    
     onClick: async function (click) {   //main function servicing all the tool clicks
       var parent = click.target.parentElement
       var localization = parent.id.split('t')[1]
       var result = null
       var diagnosis = null
-      var procedure = null
+      var procedureRecord = null
       var Encounter = null
       var Patient = null
-      var date = null
       switch (this.toolSelected) {
         case 'Decay':
-          Encounter = this.SelectedEncounter
+          Encounter = await this.getTodaysEncounter()
           Patient = this.Patient
-          if (typeof Encounter.id == 'undefined' || Encounter.id == null) {   //if encounter is non existent, create one
-            date = new Date()
-            date.setUTCHours(0, 0, 0, 0)    //only date needed
-            Encounter = {
-              date: date,
-              Patient: this.Patient,
-            }
-            result = await PatientService.CreateEncounter(Encounter)
-            this.SelectedEncounter = result.data  //switch selected encounter with the placeholder
-          }
-          diagnosis = {
-            ClassificationOfDisease: { id: 1 },
-            Encounter: { 
-                id: Encounter.id,
-                Patient: { id: Patient.id }
-            },
-            ToothRecord: { 
-                Tooth: {
-                    localization: localization
-                }
-            },
-          };
-          result = await DiagnosesService.CreateDiagnosis(diagnosis)
-          if (result.status >= 200 && result.status < 300) {
-            Encounter.diagnoses.push(result.data)
-            this.SelectedEncounter = Encounter
-            this.diagnoses.push(result.data)
-            HelperService.colorTooth(localization, 'rgb(255, 255, 255)', 'grey')
-          }
-          break
-        case 'Select':
-          /* eslint-disable no-debugger */
-          debugger
-          /* eslint-enable no-debugger */
-          diagnosis = this.diagnoses.find(d=>d.toothRecord.tooth.localization==localization)
-          if(diagnosis!=null){
-            this.formDiagnosis=diagnosis
-          } 
+          diagnosis = await this.createDiagnosisObject(ClassificationsOfDiseaseEnum.Decay, localization)
+          await this.addDiagnosis(diagnosis)
           break
         case 'WhiteFilling':
-          Encounter = this.SelectedEncounter
-          Patient = this.Patient
-          if (typeof Encounter.id == 'undefined' || Encounter.id == null) {   //if encounter is non existent, create one
-            date = new Date()
-            date.setUTCHours(0, 0, 0, 0)    //only date needed
-            Encounter = {
-              date: date,
-              Patient: this.Patient,
-            }
-            result = await PatientService.CreateEncounter(Encounter)
-            this.SelectedEncounter = result.data  //switch selected encounter with the placeholder
+          Encounter = await this.getTodaysEncounter()
+          procedureRecord = await this.createProcedureRecordObject(ProceduresEnum.WhiteFilling, localization)
+          await this.addProcedureRecord(procedureRecord)
+          break
+        case 'Select':
+          var record = this.getLastRecord(localization)
+          if(record!=null){
+            this.formRecord=record
+          } 
+          break
+        case 'Delete':
+          var deleteRecord = this.getLastRecord(localization)
+          if(deleteRecord==null){
+            break
           }
-          procedure = {
-            Procedure: { id: 1 },
-            Encounter: { 
-                id: Encounter.id,
-                Patient: { id: Patient.id }
-            },
-            ToothRecord: { 
-                Tooth: {
-                    localization: localization
-                }
-            },
-          };
-          /* eslint-disable no-debugger */
-          debugger
-          /* eslint-enable no-debugger */
-          result = await ProcedureRecordsService.CreateProcedureRecord(procedure)
-          if (result.status >= 200 && result.status < 300) {
-            Encounter.procedureRecords.push(result.data)
-            this.SelectedEncounter = Encounter
-            this.procedureRecords.push(result.data)
-            HelperService.colorTooth(localization, 'rgb(255, 255, 255)', 'grey')
+          if(deleteRecord.procedure==null){
+            result = confirm("You're about to delete diagnosis " + deleteRecord.classificationOfDisease.displayName + " " + localization)
+            if(result){
+              await this.removeDiagnosis(deleteRecord) 
+            }
+         }
+          else{
+            result = confirm("You're about to delete procedure record " + deleteRecord.procedure.displayName + " " + localization)
+            if(result){
+              await this.removeProcedureRecord(deleteRecord) 
+            }
           }
           break
+       
       }
     },
   },
@@ -266,7 +354,7 @@ h2 {
   flex: 3;
 }
 
-header {
+.header {
   display: flex;
 }
 

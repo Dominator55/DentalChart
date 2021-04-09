@@ -12,27 +12,26 @@
             </option>
          </select>
          <br>
-         <select name="classifications" class="select" >
+         <select name="procedures" class="select" >
             <option
             class="option"       
-            v-for="classificationOfDisease in classificationsOfDisease" 
-            :key="classificationOfDisease.id"
-            :value="classificationOfDisease.id">
-               {{classificationOfDisease.code+" "+classificationOfDisease.name}}
+            v-for="procedure in procedures" 
+            :key="procedure.id"
+            :value="procedure.id">
+               {{procedure.code+" "+procedure.displayName}}
             </option>
          </select>
          <select name="teeth" class="select" v-model="selectedTooth.id" >
             <option
             class="option"       
-            v-for="tooth in teeth" 
-            :key="tooth.id"
-            :value="tooth.id"
+            v-for="toothRecord in teeth" 
+            :key="toothRecord.id"
+            :value="toothRecord.id"
             >
-               {{tooth.tooth.localization}}
+               {{toothRecord.tooth.localization}}
             </option> 
          </select>                          
          <br>
-         <textarea type="text" name="note" v-model="updateDiagnosis.note" class="multiline"/>
       </form>
       <button v-on:click="cancel">Cancel</button>
       <button v-on:click="save">Save</button>
@@ -42,50 +41,49 @@
 </template>
 
 <script>
-import DiagnosesService from '@/services/DiagnosesService'
+import ProcedureRecordsService from '@/services/ProcedureRecordsService'
 export default {
-  name: 'DiagnosisForm',
+  name: 'ProcedureRecordForm',
  props:{
     encounters: [],
-    diagnosis: Object,
+    procedureRecord: Object,
     teeth: []
  },
  data() {
      return {
-        classificationsOfDisease: [],
-        updateDiagnosis:{},
+         procedures: [],
+         updateProcedureRecord:{},
          selectedEncounter:{},
          selectedTooth: {}
      }
- },
- created() {
-    this.open=false
  },
  methods: {
     cancel: function(){
        this.$emit('cancelEdit')
     },
     save: async function(){
-       var result = await DiagnosesService.UpdateDiagnosis(this.updateDiagnosis, this.updateDiagnosis.id) 
-       this.updateDiagnosis = result.data
-       this.$emit('updateDiagnosis', this.updateDiagnosis)
+       /* eslint-disable no-debugger */
+       debugger
+       /* eslint-enable no-debugger */
+       var result = await ProcedureRecordsService.UpdateProcedureRecord(this.updateProcedureRecord, this.updateProcedureRecord.id)
+       this.updateProcedureRecord = result.data
+       this.$emit('updateProcedureRecord', this.updateProcedureRecord)
     },
 
     delete: function(){}
  },
  mounted: async function(){
-      var result = await DiagnosesService.GetClassificationsOfDisease()
-      this.classificationsOfDisease = result.data
-      this.selectedEncounter = this.diagnosis.encounter
-      this.selectedTooth = this.diagnosis.toothRecord
-      this.updateDiagnosis = this.diagnosis
+      var result = await ProcedureRecordsService.GetProcedures()
+      this.procedures = result.data
+      this.selectedEncounter = this.procedureRecord.encounter
+      this.selectedTooth = this.procedureRecord.toothRecord
+      this.updateProcedureRecord=this.procedureRecord
       },
 watch: { 
-      diagnosis: function(newVal) { // watch i
-            this.updateDiagnosis = newVal
+      procedureRecord: function(newVal) { // watch i
+            this.updateProcedureRecord = newVal
             this.selectedEncounter = newVal.encounter
             this.selectedTooth = newVal.toothRecord
-            
       }
  }
 }

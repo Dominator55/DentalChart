@@ -1895,7 +1895,9 @@ import HelperService from '@/services/HelperService'
 export default {
   name: 'DentalChart',
   props:{
-      diagnoses:[]
+      diagnoses: Array,
+      procedureRecords: Array,
+      toothRecords: Array
   },
   mounted: function(){
      document.getElementById('denture').children.forEach(child=>child.addEventListener('mouseenter',this.mouseEnter))
@@ -1904,20 +1906,41 @@ export default {
   },
   watch: {
       diagnoses: function(val,old){
-         old.forEach(diagnosis=>{
-            HelperService.colorTooth(diagnosis.toothRecord.tooth.localization, 'grey','rgb(255, 255, 255)')
-         })
-         val.forEach(diagnosis=>{
-            HelperService.colorTooth(diagnosis.toothRecord.tooth.localization,'rgb(255, 255, 255)', 'grey')
-         })
+         /* eslint-disable no-debugger */
+         debugger
+         /* eslint-enable no-debugger */
+         this.refreshDentalChart()
+      },
+      procedureRecords: function(){
+         this.refreshDentalChart()
       }
   },
   methods: {
+    refreshDentalChart: function(){
+       var localization
+       var visualizationRecord
+       this.toothRecords.forEach(toothRecord => {
+         localization = toothRecord.tooth.localization
+         visualizationRecord = this.getLastRecord(localization)
+          if(visualizationRecord!= null){
+          HelperService.visualizeRecord(visualizationRecord)
+        }
+        else{
+          HelperService.clearVisualization(localization)
+        }
+       });
+    },
+    getLastRecord: function(localization){
+      var diagnoses = this.diagnoses.filter(d=>d.toothRecord.tooth.localization==localization)  //todo MAKE IT SHOW LAST RECORD
+      var procedureRecords =  this.procedureRecords.filter(pr=>pr.toothRecord.tooth.localization==localization)
+      return procedureRecords.length!=0 ? procedureRecords[procedureRecords.length-1] : diagnoses[diagnoses.length-1]
+    },
      mouseEnter: function(event){
         var localization = event.target.id.split('t')[1];
         this.$emit('mouseEnter', localization)
      },
       mouseLeave: function(event){
+
         var localization = event.target.id.split('t')[1];
         this.$emit('mouseLeave', localization)
      }

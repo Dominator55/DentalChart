@@ -23,7 +23,7 @@ export default {
   name: 'EncounterPicker',
  props:{
      SelectedEncounterDate: Date,
-     encounters: []
+     encounters: Array
  },
  data() {
      return {

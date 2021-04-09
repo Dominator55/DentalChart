@@ -14,7 +14,7 @@ export default class DiagnosesService {
     }
 
     static async DeleteDiagnosis(id){
-        //TODO: Delete diagnosis API call
+        return await axios.delete('https://localhost:44351/api/Diagnoses/'+id)
     }
 
     static async GetClassificationOfDiseaseById(id){

@@ -45,7 +45,7 @@ namespace DentistAPI.Controllers
         // PUT: api/ProcedureRecords/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProcedureRecord(int id, ProcedureRecord procedureRecord)
+        public async Task<ActionResult<ProcedureRecord>> PutProcedureRecord(int id, ProcedureRecord procedureRecord)
         {
             if (id != procedureRecord.Id)
             {
@@ -56,6 +56,8 @@ namespace DentistAPI.Controllers
 
             try
             {
+                procedureRecord.ToothRecord = _context.ToothRecords.First(t => t.Id == procedureRecord.ToothRecord.Id);
+                procedureRecord.Procedure = _context.Procedures.Find(procedureRecord.Procedure.Id);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -70,7 +72,7 @@ namespace DentistAPI.Controllers
                 }
             }
 
-            return NoContent();
+            return procedureRecord;
         }
 
         // POST: api/ProcedureRecords

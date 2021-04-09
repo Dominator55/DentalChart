@@ -12,4 +12,4 @@ namespace DentistAPI.Models
 
         public string DisplayName { get; set; }
     }
-}
+} 
